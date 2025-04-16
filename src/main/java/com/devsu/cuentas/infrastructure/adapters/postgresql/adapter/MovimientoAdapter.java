@@ -6,6 +6,7 @@ import com.devsu.cuentas.infrastructure.adapters.postgresql.entity.MovimientoEnt
 import com.devsu.cuentas.infrastructure.adapters.postgresql.repository.MovimientoJpaRepository;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -44,6 +45,15 @@ public class MovimientoAdapter implements MovimientoPostgreSQLGateway {
     @Override
     public List<Movimiento> obtenerMovimientosPorCuentaId(Long cuentaId) {
         return movimientoJpaRepository.findByCuentaId(cuentaId)
+                .stream()
+                .map(this::toModel)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Movimiento> obtenerMovimientosPorCuentaYFecha(Long cuentaId, LocalDate desde, LocalDate hasta) {
+        return movimientoJpaRepository
+                .findByCuentaIdAndFechaBetween(cuentaId, desde, hasta)
                 .stream()
                 .map(this::toModel)
                 .collect(Collectors.toList());

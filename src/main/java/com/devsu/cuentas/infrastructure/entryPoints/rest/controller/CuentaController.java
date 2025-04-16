@@ -1,10 +1,14 @@
 package com.devsu.cuentas.infrastructure.entryPoints.rest.controller;
 
 import com.devsu.cuentas.application.useCase.cuenta.CuentaUseCase;
+import com.devsu.cuentas.application.useCase.reporte.ReporteUseCase;
 import com.devsu.cuentas.domain.model.cuenta.Cuenta;
+import com.devsu.cuentas.domain.model.reporte.EstadoDeCuenta;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,9 +17,11 @@ import java.util.Optional;
 public class CuentaController {
 
     private final CuentaUseCase cuentaUseCase;
+    private final ReporteUseCase reporteUseCase;
 
-    public CuentaController(CuentaUseCase cuentaUseCase) {
+    public CuentaController(CuentaUseCase cuentaUseCase, ReporteUseCase reporteUseCase) {
         this.cuentaUseCase = cuentaUseCase;
+        this.reporteUseCase = reporteUseCase;
     }
 
     @PostMapping
@@ -41,5 +47,15 @@ public class CuentaController {
         cuenta.setCuentaId(id);
         Cuenta cuentaActualizada = cuentaUseCase.actualizarCuenta(cuenta);
         return ResponseEntity.ok(cuentaActualizada);
+    }
+
+    @GetMapping("/reportes")
+    public ResponseEntity<EstadoDeCuenta> generarReporte(
+            @RequestParam String identificacionCliente,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate desde,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate hasta
+    ) {
+        EstadoDeCuenta reporte = reporteUseCase.generarEstadoDeCuenta(identificacionCliente, desde, hasta);
+        return ResponseEntity.ok(reporte);
     }
 }

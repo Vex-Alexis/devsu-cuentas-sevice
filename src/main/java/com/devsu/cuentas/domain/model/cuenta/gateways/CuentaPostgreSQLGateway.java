@@ -9,5 +9,6 @@ public interface CuentaPostgreSQLGateway {
     Cuenta crearCuenta(Cuenta cuenta);
     Optional<Cuenta> obtenerCuentaPorId(Long cuentaId);
     List<Cuenta> obtenerTodasLasCuentas();
+    List<Cuenta> obtenerCuentasPorCliente(Long clienteId);
     Cuenta actualizarCuenta(Cuenta cuenta);
 }

@@ -40,6 +40,14 @@ public class CuentaAdapter implements CuentaPostgreSQLGateway {
     }
 
     @Override
+    public List<Cuenta> obtenerCuentasPorCliente(Long clienteId) {
+        return cuentaRepository.findByClienteId(clienteId)
+                .stream()
+                .map(this::mapToDomain)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public Cuenta actualizarCuenta(Cuenta cuenta) {
         if (!cuentaRepository.existsById(cuenta.getCuentaId())) {
             throw new RuntimeException("Cuenta no encontrada");
