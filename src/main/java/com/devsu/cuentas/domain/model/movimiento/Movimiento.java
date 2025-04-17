@@ -13,7 +13,7 @@ public class Movimiento {
     private String tipoMovimiento;
     private Double valor;
     private Double saldo;
-    private Long cuentaId; // relación lógica
+    private Long cuentaId;
 
     public Long getMovimientoId() {
         return movimientoId;

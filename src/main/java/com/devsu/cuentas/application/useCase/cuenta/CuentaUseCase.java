@@ -2,7 +2,10 @@ package com.devsu.cuentas.application.useCase.cuenta;
 
 import com.devsu.cuentas.domain.model.cuenta.Cuenta;
 import com.devsu.cuentas.domain.model.cuenta.gateways.CuentaPostgreSQLGateway;
+import com.devsu.cuentas.domain.model.exceptions.DuplicateAccountException;
+import com.devsu.cuentas.domain.model.exceptions.NotFoundException;
 import com.devsu.cuentas.domain.useCase.cuenta.CuentaCRUDUseCase;
+import com.devsu.cuentas.infrastructure.entryPoints.rest.dto.request.CuentaUpdateRequest;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -18,7 +21,17 @@ public class CuentaUseCase implements CuentaCRUDUseCase {
 
     @Override
     public Cuenta crearCuenta(Cuenta cuenta) {
+        Optional<Cuenta> cuentaExistente = cuentaPostgreSQLGateway.obtenerCuentaPorNumeroCuenta(cuenta.getNumeroCuenta());
+        if(cuentaExistente.isPresent()){
+            throw new DuplicateAccountException("Ya existe una cuenta bancaria con el número de cuenta: " + cuenta.getNumeroCuenta());
+        }
         return cuentaPostgreSQLGateway.crearCuenta(cuenta);
+    }
+
+    @Override
+    public Cuenta consultarCuentaPorNumeroCuenta(String numeroCuenta) {
+        return cuentaPostgreSQLGateway.obtenerCuentaPorNumeroCuenta(numeroCuenta)
+                .orElseThrow(()-> new NotFoundException("La cuenta bancaria con número de cuenta " + numeroCuenta + " no existe"));
     }
 
     @Override
@@ -32,7 +45,14 @@ public class CuentaUseCase implements CuentaCRUDUseCase {
     }
 
     @Override
-    public Cuenta actualizarCuenta(Cuenta cuenta) {
-        return cuentaPostgreSQLGateway.actualizarCuenta(cuenta);
+    public Cuenta actualizarCuenta(String numeroCuenta, CuentaUpdateRequest updateRequest) {
+        Cuenta cuentaExistente = cuentaPostgreSQLGateway.obtenerCuentaPorNumeroCuenta(numeroCuenta)
+                .orElseThrow(() -> new NotFoundException("La cuenta con número " + numeroCuenta + " no existe"));
+
+        // Actualiza campos
+        cuentaExistente.setTipoCuenta(updateRequest.getTipoCuenta());
+        cuentaExistente.setEstado(updateRequest.getEstado());
+
+        return cuentaPostgreSQLGateway.actualizarCuenta(cuentaExistente);
     }
 }

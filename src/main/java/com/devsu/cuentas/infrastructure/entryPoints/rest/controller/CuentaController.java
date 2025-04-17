@@ -4,7 +4,9 @@ import com.devsu.cuentas.application.useCase.cuenta.CuentaUseCase;
 import com.devsu.cuentas.application.useCase.reporte.ReporteUseCase;
 import com.devsu.cuentas.domain.model.cuenta.Cuenta;
 import com.devsu.cuentas.domain.model.reporte.EstadoDeCuenta;
+import com.devsu.cuentas.infrastructure.entryPoints.rest.dto.request.CuentaUpdateRequest;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,15 +39,23 @@ public class CuentaController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/numero-cuenta/{numeroCuenta}")
+    public ResponseEntity<?> obtenerPorNumeroCuenta(@PathVariable String numeroCuenta) {
+        Cuenta cuenta = cuentaUseCase.consultarCuentaPorNumeroCuenta(numeroCuenta);
+        return ResponseEntity.status(HttpStatus.OK).body(cuenta);
+    }
+
     @GetMapping
     public ResponseEntity<List<Cuenta>> listarCuentas() {
         return ResponseEntity.ok(cuentaUseCase.listarCuentas());
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Cuenta> actualizarCuenta(@PathVariable Long id, @RequestBody Cuenta cuenta) {
-        cuenta.setCuentaId(id);
-        Cuenta cuentaActualizada = cuentaUseCase.actualizarCuenta(cuenta);
+    @PutMapping("/{numeroCuenta}")
+    public ResponseEntity<Cuenta> actualizarCuenta(
+            @PathVariable String numeroCuenta,
+            @RequestBody CuentaUpdateRequest request) {
+
+        Cuenta cuentaActualizada = cuentaUseCase.actualizarCuenta(numeroCuenta, request);
         return ResponseEntity.ok(cuentaActualizada);
     }
 

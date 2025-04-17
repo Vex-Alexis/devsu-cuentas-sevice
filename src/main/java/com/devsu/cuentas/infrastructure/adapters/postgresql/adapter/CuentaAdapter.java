@@ -32,6 +32,12 @@ public class CuentaAdapter implements CuentaPostgreSQLGateway {
     }
 
     @Override
+    public Optional<Cuenta> obtenerCuentaPorNumeroCuenta(String numeroCuenta) {
+        return cuentaRepository.findByNumeroCuenta(numeroCuenta)
+                .map(this::mapToDomain);
+    }
+
+    @Override
     public List<Cuenta> obtenerTodasLasCuentas() {
         return cuentaRepository.findAll()
                 .stream()
@@ -49,9 +55,6 @@ public class CuentaAdapter implements CuentaPostgreSQLGateway {
 
     @Override
     public Cuenta actualizarCuenta(Cuenta cuenta) {
-        if (!cuentaRepository.existsById(cuenta.getCuentaId())) {
-            throw new RuntimeException("Cuenta no encontrada");
-        }
         CuentaEntity entity = mapToEntity(cuenta);
         CuentaEntity actualizada = cuentaRepository.save(entity);
         return mapToDomain(actualizada);

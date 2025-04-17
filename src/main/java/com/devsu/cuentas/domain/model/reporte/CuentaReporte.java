@@ -7,11 +7,13 @@ import java.util.List;
 
 public class CuentaReporte {
     private Long cuentaId;
+    private String tipoCuenta;
     private Double saldoActual;
     private List<Movimiento> movimientos;
 
-    public CuentaReporte(Long cuentaId, Double saldoActual, List<Movimiento> movimientos) {
+    public CuentaReporte(Long cuentaId, String tipoCuenta, Double saldoActual, List<Movimiento> movimientos) {
         this.cuentaId = cuentaId;
+        this.tipoCuenta = tipoCuenta;
         this.saldoActual = saldoActual;
         this.movimientos = movimientos;
     }
@@ -22,6 +24,14 @@ public class CuentaReporte {
 
     public void setCuentaId(Long cuentaId) {
         this.cuentaId = cuentaId;
+    }
+
+    public String getTipoCuenta() {
+        return tipoCuenta;
+    }
+
+    public void setTipoCuenta(String tipoCuenta) {
+        this.tipoCuenta = tipoCuenta;
     }
 
     public Double getSaldoActual() {

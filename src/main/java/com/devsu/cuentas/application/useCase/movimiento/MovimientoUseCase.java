@@ -2,6 +2,9 @@ package com.devsu.cuentas.application.useCase.movimiento;
 
 import com.devsu.cuentas.domain.model.cuenta.Cuenta;
 import com.devsu.cuentas.domain.model.cuenta.gateways.CuentaPostgreSQLGateway;
+import com.devsu.cuentas.domain.model.exceptions.InactiveAccountException;
+import com.devsu.cuentas.domain.model.exceptions.InsufficientBalanceException;
+import com.devsu.cuentas.domain.model.exceptions.NotFoundException;
 import com.devsu.cuentas.domain.model.movimiento.Movimiento;
 import com.devsu.cuentas.domain.model.movimiento.gateways.MovimientoPostgreSQLGateway;
 import com.devsu.cuentas.domain.useCase.movimiento.MovimientoCRUDUseCase;
@@ -25,11 +28,15 @@ public class MovimientoUseCase implements MovimientoCRUDUseCase {
     @Override
     public Movimiento crearMovimiento(Movimiento movimiento) {
         Cuenta cuenta = cuentaPostgreSQLGateway.obtenerCuentaPorId(movimiento.getCuentaId())
-                .orElseThrow(()-> new RuntimeException("Cuenta no encontrada"));
+                .orElseThrow(()-> new NotFoundException("Cuenta no encontrada con ID: " + movimiento.getCuentaId()));
+
+        if (!Boolean.TRUE.equals(cuenta.getEstado())) {
+            throw new InactiveAccountException("La cuenta está inactiva. No se pueden hacer movimientos.");
+        }
 
         double nuevoSaldo = cuenta.getSaldoInicial() + movimiento.getValor();
         if (nuevoSaldo < 0) {
-            throw new RuntimeException("Saldo no disponible");
+            throw new InsufficientBalanceException("Saldo no disponible para realizar el movimiento.");
         }
         cuenta.setSaldoInicial(nuevoSaldo);
         cuentaPostgreSQLGateway.actualizarCuenta(cuenta); // actualiza el saldo
