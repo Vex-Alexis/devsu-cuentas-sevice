@@ -40,8 +40,10 @@ public class ReporteUseCase implements ReporteEstadoCuentaUseCase {
             List<Movimiento> movimientos = movimientoPostgreSQLGateway.obtenerMovimientosPorCuentaYFecha(cuenta.getCuentaId(), desde, hasta);
             return new CuentaReporte(
                     cuenta.getCuentaId(),
+                    cuenta.getNumeroCuenta(),
                     cuenta.getTipoCuenta(),
                     cuenta.getSaldoInicial(),
+                    cuenta.getEstado(),
                     movimientos
             );
         }).toList();

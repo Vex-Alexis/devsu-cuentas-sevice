@@ -4,7 +4,9 @@ import com.devsu.cuentas.application.useCase.cuenta.CuentaUseCase;
 import com.devsu.cuentas.application.useCase.reporte.ReporteUseCase;
 import com.devsu.cuentas.domain.model.cuenta.Cuenta;
 import com.devsu.cuentas.domain.model.reporte.EstadoDeCuenta;
+import com.devsu.cuentas.infrastructure.entryPoints.rest.dto.request.CuentaRequest;
 import com.devsu.cuentas.infrastructure.entryPoints.rest.dto.request.CuentaUpdateRequest;
+import com.devsu.cuentas.infrastructure.entryPoints.rest.mapper.CuentaMapper;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,9 +29,10 @@ public class CuentaController {
     }
 
     @PostMapping
-    public ResponseEntity<Cuenta> crearCuenta(@RequestBody Cuenta cuenta) {
-        Cuenta nuevaCuenta = cuentaUseCase.crearCuenta(cuenta);
-        return ResponseEntity.ok(nuevaCuenta);
+    public ResponseEntity<Cuenta> crearCuenta(@RequestBody CuentaRequest cuentaRequest) {
+        Cuenta cuenta = CuentaMapper.toDomain(cuentaRequest);
+        Cuenta cuentaCreada = cuentaUseCase.crearCuenta(cuenta);
+        return ResponseEntity.status(HttpStatus.CREATED).body(cuentaCreada);
     }
 
     @GetMapping("/{id}")
@@ -53,10 +56,10 @@ public class CuentaController {
     @PutMapping("/{numeroCuenta}")
     public ResponseEntity<Cuenta> actualizarCuenta(
             @PathVariable String numeroCuenta,
-            @RequestBody CuentaUpdateRequest request) {
-
-        Cuenta cuentaActualizada = cuentaUseCase.actualizarCuenta(numeroCuenta, request);
-        return ResponseEntity.ok(cuentaActualizada);
+            @RequestBody CuentaUpdateRequest cuentaUpdateRequest) {
+        Cuenta cuenta = CuentaMapper.toDomain(cuentaUpdateRequest);
+        Cuenta cuentaActualizada = cuentaUseCase.actualizarCuenta(numeroCuenta, cuenta);
+        return ResponseEntity.status(HttpStatus.CREATED).body(cuentaActualizada);
     }
 
     @GetMapping("/reportes")

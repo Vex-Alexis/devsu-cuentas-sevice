@@ -64,12 +64,9 @@ public class MovimientoAdapter implements MovimientoPostgreSQLGateway {
         MovimientoEntity entity = movimientoJpaRepository.findById(movimientoId)
                 .orElseThrow(() -> new RuntimeException("Movimiento no encontrado"));
 
-        // solo actualizamos campos permitidos
-        entity.setFecha(movimiento.getFecha());
+        // Actualizamos campos permitidos
         entity.setTipoMovimiento(movimiento.getTipoMovimiento());
         entity.setValor(movimiento.getValor());
-        entity.setSaldo(movimiento.getSaldo());
-        //entity.setCuentaId(movimiento.getCuentaId());
 
         MovimientoEntity actualizado = movimientoJpaRepository.save(entity);
         return toModel(actualizado);

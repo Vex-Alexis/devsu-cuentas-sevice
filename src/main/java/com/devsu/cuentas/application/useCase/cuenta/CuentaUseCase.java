@@ -45,13 +45,13 @@ public class CuentaUseCase implements CuentaCRUDUseCase {
     }
 
     @Override
-    public Cuenta actualizarCuenta(String numeroCuenta, CuentaUpdateRequest updateRequest) {
+    public Cuenta actualizarCuenta(String numeroCuenta, Cuenta cuenta) {
         Cuenta cuentaExistente = cuentaPostgreSQLGateway.obtenerCuentaPorNumeroCuenta(numeroCuenta)
                 .orElseThrow(() -> new NotFoundException("La cuenta con número " + numeroCuenta + " no existe"));
 
         // Actualiza campos
-        cuentaExistente.setTipoCuenta(updateRequest.getTipoCuenta());
-        cuentaExistente.setEstado(updateRequest.getEstado());
+        cuentaExistente.setTipoCuenta(cuenta.getTipoCuenta());
+        cuentaExistente.setEstado(cuenta.getEstado());
 
         return cuentaPostgreSQLGateway.actualizarCuenta(cuentaExistente);
     }

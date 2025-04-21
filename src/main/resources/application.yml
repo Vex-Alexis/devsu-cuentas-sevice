@@ -1,6 +1,8 @@
 spring:
   application:
     name: cuentas-service
+  profiles:
+    active: local
   datasource:
     url: jdbc:postgresql://localhost:5432/devsu_db
     username: devsu

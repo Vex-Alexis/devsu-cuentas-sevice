@@ -2,6 +2,10 @@ package com.devsu.cuentas.infrastructure.entryPoints.rest.controller;
 
 import com.devsu.cuentas.domain.model.movimiento.Movimiento;
 import com.devsu.cuentas.domain.useCase.movimiento.MovimientoCRUDUseCase;
+import com.devsu.cuentas.infrastructure.entryPoints.rest.dto.request.MovimientoRequest;
+import com.devsu.cuentas.infrastructure.entryPoints.rest.dto.request.MovimientoUpdateRequest;
+import com.devsu.cuentas.infrastructure.entryPoints.rest.mapper.MovimientoMapper;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,9 +23,10 @@ public class MovimientoController {
     }
 
     @PostMapping
-    public ResponseEntity<Movimiento> crearMovimiento(@RequestBody Movimiento movimiento) {
-        Movimiento creado = movimientoUseCase.crearMovimiento(movimiento);
-        return ResponseEntity.created(URI.create("/movimientos/" + creado.getMovimientoId())).body(creado);
+    public ResponseEntity<Movimiento> crearMovimiento(@RequestBody @Valid MovimientoRequest movimientoRequest) {
+        Movimiento movimiento = MovimientoMapper.toDomain(movimientoRequest);
+        Movimiento movimientoCreado = movimientoUseCase.crearMovimiento(movimiento);
+        return ResponseEntity.created(URI.create("/movimientos/" + movimientoCreado.getMovimientoId())).body(movimientoCreado);
     }
 
     @GetMapping
@@ -42,9 +47,9 @@ public class MovimientoController {
         return ResponseEntity.ok(movimientos);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Movimiento> actualizarMovimiento(@PathVariable Long id, @RequestBody Movimiento movimiento) {
-        Movimiento actualizado = movimientoUseCase.actualizarMovimiento(id, movimiento);
-        return ResponseEntity.ok(actualizado);
+    @PostMapping("/{id}/revertir")
+    public ResponseEntity<Movimiento> revertirMovimiento(@PathVariable Long id) {
+        Movimiento movimientoRevertido = movimientoUseCase.revertirMovimiento(id);
+        return ResponseEntity.ok(movimientoRevertido);
     }
 }

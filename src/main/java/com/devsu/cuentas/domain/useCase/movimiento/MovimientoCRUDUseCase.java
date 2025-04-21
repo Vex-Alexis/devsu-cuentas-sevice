@@ -10,5 +10,5 @@ public interface MovimientoCRUDUseCase {
     List<Movimiento> obtenerTodosLosMovimientos();
     Optional<Movimiento> obtenerMovimientoPorId(Long movimientoId);
     List<Movimiento> obtenerMovimientosPorCuentaId(Long cuentaId);
-    Movimiento actualizarMovimiento(Long movimientoId, Movimiento movimiento);
+    Movimiento revertirMovimiento(Long movimientoId);
 }
